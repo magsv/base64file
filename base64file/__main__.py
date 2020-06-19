@@ -3,7 +3,6 @@ import base64
 import logging
 import click
 
-
 @click.group()
 def messages():
   pass
@@ -17,13 +16,17 @@ def list_files(folder):
     return files
 
 
-def base64_handle_file(input,output,encode=False):
+def base64_handle_file(input,output,encode=False,cleanNewLines=False):
     file=open(input,'rb')
     data=file.read()
     processed_data=''
     if encode:
         #encode to base64
-        processed_data=base64.encodestring(data)
+        if cleanNewLines:
+            logging.info("Cleaning new lines...")
+            processed_data=base64.b64encode(data)
+        else:
+            processed_data=base64.encodestring(data)
     else:
         processed_data=base64.decodestring(data)
     file = open(output, 'wb')
@@ -51,14 +54,16 @@ def build_output_name(input_file,output_folder,extension):
               help='The output extension to use for encoded files default .encoded_b64',
               default='.encoded_b64',
               required=False)
-def encode(input,output,output_extension):
+@click.option('--clean_lines',is_flag=True,default=False)
+def encode(input,output,output_extension,clean_lines):
     #create the output folder if not existing
     create_folder_if_not_exist(output)
     files=list_files(input)
     for item in files:
         output_name=build_output_name(item,output,output_extension)
         #encode it
-        base64_handle_file(item,output_name,encode=True)
+        base64_handle_file(item,output_name,encode=True,
+        cleanNewLines=clean_lines)
 
 @click.command(name='decode',help='Command to decode a set of files from base64')
 @click.option('--input',

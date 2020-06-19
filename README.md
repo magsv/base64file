@@ -15,3 +15,8 @@ python3 -m base64file decode --input='./inputfolder' --output='./decoded' --outp
 
 python3 -m base64file encode --input='./inputfolder' --output='./decoded' --output_extension='.encoded_b64'
 
+
+## Encoding and remove default newlines
+
+python3 -m base64file encode --input='./inputfolder' --output='./decoded' --output_extension='.encoded_b64' --clean_lines
+
